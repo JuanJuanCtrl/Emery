@@ -4,7 +4,8 @@ A modern, minimal Python CLI for uploading files with drag-and-drop support. All
 
 ## Features
 
-- 🎯 **Drag & Drop Support** - Simply drag files into the terminal
+- 🎯 **Drag & Drop Support** - Simply drag files or folders into the terminal
+- 📁 **Folder Uploads** - Upload entire directories with nested structure preserved
 - 📁 **Smart File Organization** - Automatic duplicate handling
 - 📊 **File Size Management** - Configurable max file size (default 100MB)
 - 🔀 **Git Integration** - Auto-commit and push to the `files` branch
@@ -35,11 +36,17 @@ pip install emery-cli
 # Simple upload
 emery upload file1.txt file2.pdf
 
+# Upload a folder
+emery upload my_folder/
+
+# Upload multiple files and folders
+emery upload file.txt my_folder/ another_file.pdf
+
 # With custom commit message
-emery upload -m "Add project documents" file1.txt file2.txt
+emery upload -m "Add project documents" file1.txt my_project_folder/
 
 # Without auto-commit
-emery upload --no-commit file.zip
+emery upload --no-commit large_folder/
 ```
 
 ### Drag and Drop
@@ -111,19 +118,35 @@ This will:
 4. Create and commit to the `files` branch
 5. Push changes to remote
 
-### Upload multiple files with message
+### Upload a folder
 
 ```bash
-emery upload -m "Add Q1 reports" sales.xlsx expenses.xlsx revenue.pdf
+emery upload my_project/
+```
+
+Entire folder structure is preserved:
+```
+files/
+└── my_project/
+    ├── file1.txt
+    ├── subfolder/
+    │   ├── file2.txt
+    │   └── file3.txt
+```
+
+### Upload multiple files and folders with message
+
+```bash
+emery upload -m "Add Q1 reports and assets" sales.xlsx assets/ summary.pdf
 ```
 
 ### Copy files without git operations
 
 ```bash
-emery upload --no-commit large_file.zip
+emery upload --no-commit large_folder/
 ```
 
-### View configuration and uploaded files
+### View configuration
 
 ```bash
 emery info

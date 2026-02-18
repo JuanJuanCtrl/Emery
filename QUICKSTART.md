@@ -31,22 +31,37 @@ This will:
 - ✓ Push to remote
 - ✓ Return to main branch
 
-### 2. Upload multiple files at once
+### 2. Upload a folder
 
 ```bash
-emery upload file1.txt file2.pdf presentation.pptx
+emery upload my_project/
 ```
 
-### 3. Add a custom commit message
-
-```bash
-emery upload -m "Add Q1 2026 financial reports" sales.xlsx quarterly_summary.pdf
+All files and subfolders are uploaded with their structure preserved:
+```
+files/
+└── my_project/
+    ├── file1.txt
+    └── subfolder/
+        └── file2.txt
 ```
 
-### 4. Copy files without git operations (dry run)
+### 3. Upload multiple files and folders at once
 
 ```bash
-emery upload --no-commit huge_file.zip
+emery upload file1.txt file2.pdf presentation.pptx my_project/
+```
+
+### 4. Add a custom commit message
+
+```bash
+emery upload -m "Add Q1 2026 financial reports" sales.xlsx quarterly_summary.pdf my_assets/
+```
+
+### 5. Copy files without git operations (dry run)
+
+```bash
+emery upload --no-commit huge_folder/ large_file.zip
 ```
 
 Later, manually commit if you want:
@@ -57,7 +72,7 @@ git commit -m "Add large files"
 git push
 ```
 
-### 5. View configuration and uploaded files
+### 6. View configuration and uploaded files
 
 ```bash
 emery info
@@ -79,14 +94,14 @@ emery clean
 
 ## Drag & Drop (Terminal)
 
-Most modern terminals support dragging files:
+Most modern terminals support dragging files and folders:
 
 1. Open Emery:
    ```bash
    emery upload
    ```
 
-2. Drag your files into the terminal window
+2. Drag your files or folders into the terminal window
 
 3. Press Enter
 
@@ -152,8 +167,14 @@ export GIT_AUTHOR_EMAIL="your@email.com"
 
 ### Batch uploads for efficiency
 ```bash
-# Upload many files at once - faster than individual uploads
-emery upload *.pdf *.xlsx documents/*.txt
+# Upload many files and folders at once - faster than individual uploads
+emery upload *.pdf assets/ documents/*.txt my_project/
+```
+
+### Upload entire project directories
+```bash
+# Preserves all subdirectories and structure
+emery upload my_project/ my_assets/ my_docs/
 ```
 
 ### Check file size before upload

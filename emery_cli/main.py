@@ -40,17 +40,19 @@ def show_info() -> None:
 
 @app.command()
 def upload(
-    files: Optional[List[Path]] = typer.Argument(None, help="Files to upload (drag & drop or specify paths)"),
+    files: Optional[List[Path]] = typer.Argument(None, help="Files or folders to upload (drag & drop or specify paths)"),
     auto_commit: bool = typer.Option(True, "--commit/--no-commit", help="Auto-commit and push changes"),
     message: Optional[str] = typer.Option(None, "-m", "--message", help="Custom commit message"),
 ) -> None:
     """
-    Upload files to the repository.
+    Upload files and folders to the repository.
     
     Examples:
         emery upload file1.txt file2.pdf
-        emery upload --no-commit file.zip
-        emery upload -m "Add new documents" file1.txt file2.txt
+        emery upload my_folder/
+        emery upload file.zip my_folder/ another_file.txt
+        emery upload --no-commit large_folder/
+        emery upload -m "Add project files" my_project/
     """
     show_banner()
     
@@ -66,30 +68,33 @@ def upload(
     # Ensure files directory exists
     FILES_DIR.mkdir(parents=True, exist_ok=True)
     
-    # Process files
+    # Process files and directories
     with Progress(transient=True) as progress:
-        task = progress.add_task("[cyan]Processing files...", total=len(files))
+        task = progress.add_task("[cyan]Processing files and folders...", total=len(files))
         
-        # Copy files
+        # Copy files and directories
         file_objects = []
         for file_path_arg in files:
             file_path = Path(file_path_arg).resolve()
             
             if file_path.is_dir():
-                console.print(f"[yellow]✓ Skipping directory: {file_path.name}[/yellow]")
-                progress.advance(task)
-                continue
-            
-            # Display file info
-            file_handler.display_file_info(file_path)
-            
-            # Copy file
-            success, result = file_handler.copy_file(file_path, FILES_DIR)
-            if success:
-                console.print(f"[green]✓ Uploaded: {file_path.name}[/green]")
-                file_objects.append(Path(result))
+                # Handle directory upload
+                console.print(f"\n[cyan]📁 Uploading folder: {file_path.name}[/cyan]")
+                success, result, copied_files = file_handler.copy_directory(file_path, FILES_DIR)
+                if success:
+                    console.print(f"[green]✓ Uploaded folder: {file_path.name} ({len(copied_files)} files)[/green]")
+                    file_objects.extend(copied_files)
+                else:
+                    console.print(f"[red]✗ Failed: {result}[/red]")
             else:
-                console.print(f"[red]✗ Failed: {result}[/red]")
+                # Handle single file upload
+                file_handler.display_file_info(file_path)
+                success, result = file_handler.copy_file(file_path, FILES_DIR)
+                if success:
+                    console.print(f"[green]✓ Uploaded: {file_path.name}[/green]")
+                    file_objects.append(Path(result))
+                else:
+                    console.print(f"[red]✗ Failed: {result}[/red]")
             
             progress.advance(task)
     
