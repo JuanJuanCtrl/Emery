@@ -1,10 +1,10 @@
 # ✨ Emery
 
-A modern, minimal Python CLI for uploading files with drag-and-drop support. All files are automatically organized and pushed to the `files` branch of your repository.
+A modern, minimal Python CLI for uploading files with an intuitive file picker dialog. All files are automatically organized and pushed to the `files` branch of your repository.
 
 ## Features
 
-- 🎯 **Drag & Drop Support** - Simply drag files or folders into the terminal
+- 🎯 **Interactive File Picker** - Browse and select files/folders with native file explorer
 - 📁 **Folder Uploads** - Upload entire directories with nested structure preserved
 - 📁 **Smart File Organization** - Automatic duplicate handling
 - 📊 **File Size Management** - Configurable max file size (default 100MB)
@@ -30,17 +30,27 @@ pip install emery-cli
 
 ## Quick Start
 
-### Upload files
+### Upload with File Picker
 
 ```bash
-# Simple upload
+# Opens file picker dialog - select files/folders to upload
+emery upload
+```
+
+Then:
+1. Browse your file system
+2. Select one or multiple files and/or folders
+3. Click Open
+4. ✓ Files are uploaded automatically
+
+### Command-line Upload (Optional)
+
+```bash
+# Direct file upload (bypasses file picker)
 emery upload file1.txt file2.pdf
 
 # Upload a folder
 emery upload my_folder/
-
-# Upload multiple files and folders
-emery upload file.txt my_folder/ another_file.pdf
 
 # With custom commit message
 emery upload -m "Add project documents" file1.txt my_project_folder/
@@ -49,21 +59,15 @@ emery upload -m "Add project documents" file1.txt my_project_folder/
 emery upload --no-commit large_folder/
 ```
 
-### Drag and Drop
-
-Most terminals support dragging files:
+### View Configuration
 
 ```bash
-emery upload <drag files here>
+emery info
 ```
 
-### View information
+### Clear Uploaded Files
 
 ```bash
-# Show configuration and uploaded files
-emery info
-
-# Clear uploaded files
 emery clean
 ```
 

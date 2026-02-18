@@ -15,7 +15,7 @@ from emery_cli.git_handler import GitHandler
 
 app = typer.Typer(
     name="emery",
-    help="Upload files to the 'files' branch with drag-and-drop support",
+    help="Upload files to the repository with file picker dialog",
     no_args_is_help=False,
 )
 
@@ -38,28 +38,75 @@ def show_info() -> None:
     console.print(Panel(info_text.strip(), title="Configuration", style="dim"))
 
 
+def open_file_picker() -> List[Path]:
+    """Open native file picker dialog for user to select files and folders.
+    
+    Returns:
+        List of selected file/folder paths
+    """
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
+        
+        # Create hidden root window
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        
+        # Open dialog to pick multiple files
+        files = filedialog.askopenfilenames(
+            title="Select files or folders to upload",
+            filetypes=[("All files", "*.*")],
+        )
+        
+        root.destroy()
+        
+        if files:
+            return [Path(f) for f in files]
+        return []
+    except Exception as e:
+        console.print(f"[red]✗ File picker error: {e}[/red]")
+        console.print("[yellow]⚠ Falling back to command-line mode[/yellow]")
+        return []
+
+
 @app.command()
 def upload(
-    files: Optional[List[Path]] = typer.Argument(None, help="Files or folders to upload (drag & drop or specify paths)"),
+    files: Optional[List[Path]] = typer.Argument(None, help="Optional: Files or folders to upload (if not provided, opens file picker)"),
     auto_commit: bool = typer.Option(True, "--commit/--no-commit", help="Auto-commit and push changes"),
     message: Optional[str] = typer.Option(None, "-m", "--message", help="Custom commit message"),
 ) -> None:
     """
     Upload files and folders to the repository.
     
+    If no files are specified, opens a file picker dialog to select files/folders.
+    
     Examples:
+        emery upload
         emery upload file1.txt file2.pdf
         emery upload my_folder/
-        emery upload file.zip my_folder/ another_file.txt
         emery upload --no-commit large_folder/
         emery upload -m "Add project files" my_project/
     """
     show_banner()
     
+    # If no files provided, open file picker
     if not files:
-        console.print("[yellow]⚠ No files provided[/yellow]")
-        show_info()
-        return
+        console.print("[cyan]📂 Opening file picker...[/cyan]")
+        files = open_file_picker()
+        
+        if not files:
+            console.print("[yellow]⚠ No files selected[/yellow]")
+            show_info()
+            return
+        
+        # Display selected files
+        console.print("[green]✓ Selected files/folders:[/green]")
+        for f in files:
+            if f.is_dir():
+                console.print(f"  📁 {f.name}/")
+            else:
+                console.print(f"  📄 {f.name}")
     
     # Initialize handlers
     file_handler = FileHandler(MAX_FILE_SIZE_MB)

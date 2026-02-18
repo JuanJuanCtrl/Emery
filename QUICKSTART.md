@@ -17,21 +17,37 @@ That's it! The `emery` command is now available in your terminal.
 
 ## Basic Usage
 
-### 1. Upload a single file
+### 1. Upload with File Picker (Recommended)
 
 ```bash
-emery upload document.pdf
+emery upload
 ```
 
 This will:
-- ✓ Validate the file
-- ✓ Copy it to the `files/` directory
+- ✓ Open native file picker dialog
+- ✓ Let you browse and select files/folders
+- ✓ Display selected items
+- ✓ Copy to the `files/` directory
 - ✓ Create/switch to the `files` branch
 - ✓ Commit with auto-generated message
 - ✓ Push to remote
 - ✓ Return to main branch
 
-### 2. Upload a folder
+**In the file picker:**
+1. Navigate your file system
+2. Select one or multiple files and/or folders
+3. Click "Open"
+4. Watch as Emery uploads everything
+
+### 2. Upload specific files (command-line)
+
+```bash
+emery upload document.pdf report.xlsx
+```
+
+Bypasses the file picker and uploads directly.
+
+### 3. Upload a folder (command-line)
 
 ```bash
 emery upload my_project/
@@ -46,23 +62,27 @@ files/
         └── file2.txt
 ```
 
-### 3. Upload multiple files and folders at once
-
-```bash
-emery upload file1.txt file2.pdf presentation.pptx my_project/
-```
-
 ### 4. Add a custom commit message
 
 ```bash
-emery upload -m "Add Q1 2026 financial reports" sales.xlsx quarterly_summary.pdf my_assets/
+emery upload -m "Add Q1 2026 financial reports"
+```
+
+Then use the file picker to select your files.
+
+Or with command-line paths:
+
+```bash
+emery upload -m "Add project files" sales.xlsx my_project/
 ```
 
 ### 5. Copy files without git operations (dry run)
 
 ```bash
-emery upload --no-commit huge_folder/ large_file.zip
+emery upload --no-commit
 ```
+
+Opens the file picker, uploads files, but doesn't commit/push.
 
 Later, manually commit if you want:
 ```bash
@@ -92,18 +112,29 @@ emery clean
 
 >  **Warning**: This removes all files in the upload directory but doesn't affect git history.
 
-## Drag & Drop (Terminal)
+## File Picker Dialog
 
-Most modern terminals support dragging files and folders:
+When you run `emery upload` without arguments, it opens a native file picker:
 
-1. Open Emery:
+1. **Run Emery:**
    ```bash
    emery upload
    ```
 
-2. Drag your files or folders into the terminal window
+2. **File picker opens** - Browse your file system
 
-3. Press Enter
+3. **Select files/folders** - Hold Ctrl/Cmd to multi-select
+
+4. **Click Open** - Upload starts automatically
+
+5. **See results** - Terminal shows upload progress and status
+
+### Advantages over terminal drag-and-drop:
+- ✓ Native file browser - familiar interface
+- ✓ Easy to navigate nested folders
+- ✓ Multi-select support
+- ✓ Works on all terminals (Windows, macOS, Linux)
+- ✓ No terminal window height limitations
 
 ## Configuration
 
@@ -131,6 +162,18 @@ export GIT_AUTHOR_EMAIL="your@email.com"
 └──────┬──────┘
        │
        ▼
+┌──────────────────┐
+│  Open file       │
+│  picker dialog   │
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│  User selects    │
+│  files/folders   │
+└──────┬───────────┘
+       │
+       ▼
 ┌──────────────┐
 │  Validate    │
 │  file size   │
@@ -138,7 +181,7 @@ export GIT_AUTHOR_EMAIL="your@email.com"
        │
        ▼
 ┌──────────────┐
-│  Copy file   │
+│  Copy files  │
 │  to files/   │
 └──────┬───────┘
        │
@@ -165,17 +208,23 @@ export GIT_AUTHOR_EMAIL="your@email.com"
 
 ## Tips & Tricks
 
-### Batch uploads for efficiency
+### Use the file picker for easy selection
 ```bash
-# Upload many files and folders at once - faster than individual uploads
-emery upload *.pdf assets/ documents/*.txt my_project/
+emery upload
+# Navigate, select multiple items (Ctrl/Cmd+Click), and click Open
 ```
 
-### Upload entire project directories
+### Quick command-line uploads (skip picker)
 ```bash
-# Preserves all subdirectories and structure
-emery upload my_project/ my_assets/ my_docs/
+# Upload specific paths directly - bypasses file picker
+emery upload /path/to/file.pdf /path/to/folder/
 ```
+
+### Mix files and folders in one upload
+In the file picker:
+- Hold Ctrl/Cmd to multi-select
+- Select individual files AND entire folders
+- All are processed together
 
 ### Check file size before upload
 ```bash
